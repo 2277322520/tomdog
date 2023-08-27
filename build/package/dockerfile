@@ -1,0 +1,7 @@
+FROM ubuntu:20.04
+
+WORKDIR /tomdog
+COPY configs configs
+COPY web web
+COPY tomdog .
+CMD ["./tomdog"]
