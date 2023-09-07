@@ -3,6 +3,7 @@ package tdnet
 import (
 	"fmt"
 	"net"
+	"tomdog/tdface"
 )
 
 type Server struct {
@@ -17,11 +18,11 @@ type Server struct {
 }
 
 func (s Server) Start() {
-	fmt.Printf("[START] server listenner at IP: %s, port %s, is starting\n", s.IP, s.Port)
+	fmt.Printf("[START] server listenner at IP: %s, port %d, is starting\n", s.IP, s.Port)
 
 	go func() {
 		// 1、获取一个 ip 地址
-		addr, _error := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%s", s.IP, s.Port))
+		addr, _error := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 		if _error != nil {
 			fmt.Println("resolve tcp addr err:", _error)
 			return
@@ -39,8 +40,8 @@ func (s Server) Start() {
 		// 3、启动网络连接
 		for {
 			// 3.1 阻塞等待客户端建立连接请求
-			connection, _error := listener.AcceptTCP()
-			if _error != nil {
+			connection, err := listener.AcceptTCP()
+			if err != nil {
 				// 获取连接失败
 				fmt.Println("accept error")
 				continue
@@ -55,14 +56,14 @@ func (s Server) Start() {
 				// 不断循环，从客户端获取数据
 				for {
 					buf := make([]byte, 512)
-					cnt, _error := connection.Read(buf)
-					if _error != nil {
+					cnt, err := connection.Read(buf)
+					if err != nil {
 						fmt.Println("receive buf error")
 						continue
 					}
 					// 回显
-					if _, _error := connection.Write(buf[:cnt]); _error != nil {
-						fmt.Println("write back error", _error)
+					if _, err := connection.Write(buf[:cnt]); err != nil {
+						fmt.Println("write back error", err)
 						continue
 					}
 				}
@@ -75,9 +76,26 @@ func (s Server) Start() {
 }
 
 func (s Server) Stop() {
+	fmt.Println("[STOP] tomdog server ,name ", s.Name)
 
+	// todo 关闭资源
 }
 
 func (s Server) Serve() {
+	s.Start()
 
+	// todo Server.Serve
+
+	select {}
+}
+
+func NewServer(name string) tdface.IServer {
+	s := &Server{
+		Name:      name,
+		IPVersion: "tcp4",
+		IP:        "0.0.0.0",
+		Port:      7077,
+	}
+
+	return s
 }
