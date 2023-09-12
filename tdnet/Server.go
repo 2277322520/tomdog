@@ -1,6 +1,7 @@
 package tdnet
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"tomdog/tdface"
@@ -17,25 +18,40 @@ type Server struct {
 	Port int
 }
 
+// CallBackToClient 定义当前客户端的 Handle API
+func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+	fmt.Println("[conn handle] call back to client")
+	if _, err := conn.Write(data[:cnt]); err != nil {
+		fmt.Println("write buf error ", err)
+		return errors.New("call back error")
+	}
+
+	return nil
+}
+
 func (s Server) Start() {
 	fmt.Printf("[START] server listenner at IP: %s, port %d, is starting\n", s.IP, s.Port)
 
 	go func() {
 		// 1、获取一个 ip 地址
-		addr, _error := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
-		if _error != nil {
-			fmt.Println("resolve tcp addr err:", _error)
+		addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
+		if err != nil {
+			fmt.Println("resolve tcp addr err:", err)
 			return
 		}
 
 		// 2、监听服务器地址
-		listener, _error := net.ListenTCP(s.IPVersion, addr)
-		if _error != nil {
-			fmt.Println("listen:", s.IPVersion, "err:", _error)
+		listener, err := net.ListenTCP(s.IPVersion, addr)
+		if err != nil {
+			fmt.Println("listen:", s.IPVersion, "err:", err)
 			return
 		}
 		// 已经监听成功
 		fmt.Println("start tomdog server", s.Name, "success, now listening...")
+
+		// sever.go 应该有一个自动生成 connID 的方法，并且生成的ID应该满足要求
+		var cid uint32
+		cid = 0
 
 		// 3、启动网络连接
 		for {
@@ -49,26 +65,11 @@ func (s Server) Start() {
 
 			// 3.2 todo Server.Start() 设置服务器最大连接控制，如果超过最大连接，则关闭最新的链接
 
-			// 3.3 todo Server.Start() 处理该信链接请求的业务方法
+			// 3.3 Server.Start() 处理该信链接请求的业务方法
+			dealConn := NewConnection(connection, cid, CallBackToClient)
+			cid++
 
-			// 这里暂时做一个最大 512 字节的回显服务
-			go func() {
-				// 不断循环，从客户端获取数据
-				for {
-					buf := make([]byte, 512)
-					cnt, err := connection.Read(buf)
-					if err != nil {
-						fmt.Println("receive buf error")
-						continue
-					}
-					// 回显
-					if _, err := connection.Write(buf[:cnt]); err != nil {
-						fmt.Println("write back error", err)
-						continue
-					}
-				}
-			}()
-
+			go dealConn.Start()
 		}
 		//	end for
 	}()
@@ -85,7 +86,6 @@ func (s Server) Serve() {
 	s.Start()
 
 	// todo Server.Serve
-
 	select {}
 }
 
