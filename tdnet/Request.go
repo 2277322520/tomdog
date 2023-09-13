@@ -11,10 +11,10 @@ type Request struct {
 	data []byte
 }
 
-func (r Request) GetConnection() tdface.IConnection {
+func (r *Request) GetConnection() tdface.IConnection {
 	return r.conn
 }
 
-func (r Request) GetData() []byte {
+func (r *Request) GetData() []byte {
 	return r.data
 }
