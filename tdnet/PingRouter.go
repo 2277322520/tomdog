@@ -10,17 +10,6 @@ type PingRouter struct {
 	BaseRouter
 }
 
-func (b *PingRouter) PreHandle(request tdface.IRequest) {
-	fmt.Println("call ping router pre handle")
-	
-	_, err := request.GetConnection().GetTCPConnection().Write([]byte("before ping router\n"))
-	
-	if err != nil {
-		fmt.Println("pre handle  ping router error")
-	}
-	
-}
-
 func (b *PingRouter) Handle(request tdface.IRequest) {
 	fmt.Println("call ping router handle")
 	_, err := request.GetConnection().GetTCPConnection().Write([]byte("ping...ping...ping...\n"))
