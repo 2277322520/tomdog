@@ -1,5 +1,8 @@
 package tdnet
 
+// HeadLen = len(Message.id) + len(Message.DataLen)
+var HeadLen uint32 = 8
+
 // Message 采取最经典的 TLU (Type-Len-Value) 封包格式来解决粘包问题
 type Message struct {
 	
@@ -40,6 +43,6 @@ func (m *Message) GetData() []byte {
 	return m.Data
 }
 
-func (m *Message) setDataLen(dataLen uint32) {
+func (m *Message) SetDataLen(dataLen uint32) {
 	m.DataLen = dataLen
 }
