@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"tomdog/tdface"
+	"tomdog/utils"
 )
 
 type Server struct {
@@ -98,11 +99,12 @@ func (s *Server) Serve() {
 }
 
 func NewServer(name string) tdface.IServer {
+	utils.GlobalObject.Init()
 	s := &Server{
-		Name:      name,
+		Name:      utils.GlobalObject.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      7077,
+		IP:        utils.GlobalObject.Host,
+		Port:      utils.GlobalObject.TcpPort,
 		Router:    nil,
 	}
 	

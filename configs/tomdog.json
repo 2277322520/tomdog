@@ -1,0 +1,6 @@
+{
+  "Name": "tomdog",
+  "Host": "127.0.0.1",
+  "TcpPort": 7077,
+  "MaxConn": 3
+}
