@@ -65,7 +65,7 @@ func (s *Server) Start() {
 		// 3、启动网络连接
 		for {
 			// 3.1 阻塞等待客户端建立连接请求
-			connection, err := listener.AcceptTCP()
+			tcpConn, err := listener.AcceptTCP()
 			if err != nil {
 				// 获取连接失败
 				fmt.Println("accept error")
@@ -75,7 +75,7 @@ func (s *Server) Start() {
 			// 3.2 todo Server.Start() 设置服务器最大连接控制，如果超过最大连接，则关闭最新的链接
 			
 			// 3.3 Server.Start() 处理该信链接请求的业务方法
-			dealConn := NewConnection(connection, cid, CallBackToClient, s.Router)
+			dealConn := NewConnection(tcpConn, cid, CallBackToClient, s.Router)
 			cid++
 			
 			go dealConn.Start()
