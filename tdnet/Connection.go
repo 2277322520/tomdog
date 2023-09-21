@@ -1,6 +1,7 @@
 package tdnet
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -146,4 +147,27 @@ func (c *Connection) GetConnID() uint32 {
 
 func (c *Connection) RemoteAddr() net.Addr {
 	return c.Conn.RemoteAddr()
+}
+
+func (c *Connection) SendMsg(msgId uint32, data []byte) error {
+	if c.isClosed {
+		return errors.New("connection closed when send msg")
+	}
+	
+	dp := NewDataPack()
+	responseData, err := dp.Pack(NewMsgPackage(msgId, data))
+	if err != nil {
+		fmt.Println("pack error msg id = ", msgId)
+		return errors.New("pack error")
+	}
+	
+	// 写回客户端
+	_, err = c.Conn.Write(responseData)
+	if err != nil {
+		fmt.Println("write msg id ", msgId, " error")
+		c.ExitBuffChan <- true
+		return errors.New("conn write error")
+	}
+	
+	return nil
 }

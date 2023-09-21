@@ -23,26 +23,26 @@ func (d *DataPack) GetHeadLen() uint32 {
 	return HeadLen
 }
 
-func (d *DataPack) Pack(msg tdface.IMessage) ([]byte, error) {
-	dataBuf := bytes.NewBuffer([]byte{})
+func (d *DataPack) Pack(response tdface.IMessage) ([]byte, error) {
+	reponseDataBuf := bytes.NewBuffer([]byte{})
 	
-	// 这行代码用于将一个uint32类型的DataLen按照小端字节序写入到指定的缓冲区(dataBuf)中，以便后续进行网络传输或其他操作。
-	if err := binary.Write(dataBuf, binary.LittleEndian, msg.GetDataLen()); err != nil {
+	// 这行代码用于将一个uint32类型的DataLen按照小端字节序写入到指定的缓冲区(reponseDataBuf)中，以便后续进行网络传输或其他操作。
+	if err := binary.Write(reponseDataBuf, binary.LittleEndian, response.GetDataLen()); err != nil {
 		return nil, err
 	}
 	
 	// 写消息ID
-	if err := binary.Write(dataBuf, binary.LittleEndian, msg.GetMsgId()); err != nil {
+	if err := binary.Write(reponseDataBuf, binary.LittleEndian, response.GetMsgId()); err != nil {
 		return nil, err
 	}
 	
 	// 写data数据
-	if err := binary.Write(dataBuf, binary.LittleEndian, msg.GetData()); err != nil {
+	if err := binary.Write(reponseDataBuf, binary.LittleEndian, response.GetData()); err != nil {
 		return nil, err
 	}
 	
 	// 返回封包之后的数据
-	return dataBuf.Bytes(), nil
+	return reponseDataBuf.Bytes(), nil
 }
 
 func (d *DataPack) Unpack(dataByte []byte) (tdface.IMessage, error) {
