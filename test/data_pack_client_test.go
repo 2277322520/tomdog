@@ -28,9 +28,9 @@ func TestDataPackClient(t *testing.T) {
 	}
 	
 	message_2 := &tdnet.Message{
-		Id:      0,
+		Id:      1,
 		DataLen: 7,
-		Data:    []byte{'w', 'o', 'r', 'l', 'd', '!'},
+		Data:    []byte{'w', 'o', 'r', 'l', 'd', '!', '!'},
 	}
 	
 	sendMessage_2, err := dp.Pack(message_2)

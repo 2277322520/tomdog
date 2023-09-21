@@ -57,6 +57,7 @@ func TestDataPackServer(t *testing.T) {
 					//而是其他类型，或者根本不是指针，那么这个操作会引发运行时的 panic。
 					msg := msg.(*tdnet.Message)
 					msg.Data = make([]byte, msg.GetDataLen())
+					//msg.Data = make([]byte, msg.GetDataLen()*2+8)
 					_, err := io.ReadFull(conn, msg.Data)
 					if err != nil {
 						fmt.Println("server unpack err:", err)
