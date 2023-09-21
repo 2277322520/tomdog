@@ -13,4 +13,7 @@ type IMessage interface {
 	
 	// SetDataLen 设置消息数据长度
 	SetDataLen(uint32)
+	
+	// SetData 设置数据
+	SetData([]byte)
 }

@@ -2,6 +2,7 @@ package tdnet
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"tomdog/tdface"
 )
@@ -54,18 +55,38 @@ func (c *Connection) StartReader() {
 	defer c.Stop()
 	
 	for {
-		buf := make([]byte, 512)
-		_, err := c.Conn.Read(buf)
+		dp := NewDataPack()
+		headData := make([]byte, dp.GetHeadLen())
 		
-		if err != nil {
-			fmt.Println("receive buf error, ", err)
+		if _, err := io.ReadFull(c.GetTCPConnection(), headData); err != nil {
+			fmt.Println("read msh head error ", err)
 			c.ExitBuffChan <- true
 			continue
 		}
 		
+		msg, err := dp.Unpack(headData)
+		if err != nil {
+			c.ExitBuffChan <- true
+			continue
+		}
+		
+		var data []byte
+		
+		if msg.GetDataLen() > 0 {
+			data = make([]byte, msg.GetDataLen())
+			_, err := io.ReadFull(c.GetTCPConnection(), data)
+			if err != nil {
+				fmt.Println("read msg data error", err)
+				c.ExitBuffChan <- true
+				continue
+			}
+		}
+		
+		msg.SetData(data)
+		
 		req := Request{
-			conn: c,
-			data: buf,
+			conn:    c,
+			message: msg,
 		}
 		
 		go func(request tdface.IRequest) {

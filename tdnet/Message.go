@@ -46,3 +46,7 @@ func (m *Message) GetData() []byte {
 func (m *Message) SetDataLen(dataLen uint32) {
 	m.DataLen = dataLen
 }
+
+func (m *Message) SetData(data []byte) {
+	m.Data = data
+}

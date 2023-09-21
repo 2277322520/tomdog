@@ -8,13 +8,13 @@ type Request struct {
 	conn tdface.IConnection
 	
 	// 请求的数据
-	data []byte
+	message tdface.IMessage
 }
 
 func (r *Request) GetConnection() tdface.IConnection {
 	return r.conn
 }
 
-func (r *Request) GetData() []byte {
-	return r.data
+func (r *Request) GetData() tdface.IMessage {
+	return r.message
 }
