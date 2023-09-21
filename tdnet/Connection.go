@@ -122,8 +122,6 @@ func (c *Connection) Stop() {
 	
 	c.isClosed = true
 	
-	// todo Connection Stop() 如果用户注册了该连接的回调业务，则应该在此处调用
-	
 	// 关闭连接
 	err := c.Conn.Close()
 	if err != nil {

@@ -12,19 +12,20 @@ type PingRouter struct {
 
 func (b *PingRouter) Handle(request tdface.IRequest) {
 	fmt.Println("call ping router handle")
-	_, err := request.GetConnection().GetTCPConnection().Write([]byte("ping...ping...ping...\n"))
+	fmt.Println("recv from client: msgid = ", request.GetData().GetMsgId(), ", data=", string(request.GetData().GetData()))
 	
+	err := request.GetConnection().SendMsg(1001, []byte("pong...pong..pong..."))
 	if err != nil {
-		fmt.Println(" handle ping router error")
+		fmt.Println("send response msg error ", err)
 	}
 }
 
 func (b *PingRouter) AfterHandle(request tdface.IRequest) {
 	fmt.Println("call ping router after handle")
 	
-	_, err := request.GetConnection().GetTCPConnection().Write([]byte("after ping router\n"))
-	
-	if err != nil {
-		fmt.Println("after handle  ping router error")
-	}
+	//_, err := request.GetConnection().GetTCPConnection().Write([]byte("after ping router\n"))
+	//
+	//if err != nil {
+	//	fmt.Println("after handle  ping router error")
+	//}
 }

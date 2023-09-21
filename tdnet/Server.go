@@ -95,7 +95,7 @@ func (s *Server) Serve() {
 	s.Start()
 	
 	// todo Server.Serve
-	// select {}
+	select {}
 }
 
 func NewServer(name string) tdface.IServer {
