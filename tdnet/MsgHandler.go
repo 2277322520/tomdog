@@ -1,9 +1,9 @@
 package tdnet
 
 import (
-	"fmt"
 	"strconv"
 	"tomdog/tdface"
+	"tomdog/utils"
 )
 
 type MsgHandler struct {
@@ -30,7 +30,7 @@ func (m *MsgHandler) AddRouter(router tdface.IRouter) {
 	}
 	
 	m.apis[router.GetRouterId()] = router
-	fmt.Println("router add success, routerId =", router.GetRouterId())
+	utils.Logging("router add success, routerId = " + strconv.Itoa(int(router.GetRouterId())))
 }
 
 // NewMsgHandler 构造函数

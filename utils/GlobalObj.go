@@ -28,6 +28,9 @@ type GlobalObj struct {
 	
 	// 当前主机允许的最大连接个数
 	MaxConn int
+	
+	// 是否开启日志
+	Log bool
 }
 
 // GlobalObject 定义一个全局变量
@@ -41,6 +44,7 @@ func (g *GlobalObj) Init() {
 	g.Version = "V0.4"
 	g.MaxPacketSize = 4096
 	g.MaxConn = 1200
+	g.Log = true
 	
 	g.Reload()
 }

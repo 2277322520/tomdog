@@ -2,7 +2,9 @@ package tdnet
 
 import (
 	"fmt"
+	"strconv"
 	"tomdog/tdface"
+	"tomdog/utils"
 )
 
 type PingRouter struct {
@@ -11,17 +13,16 @@ type PingRouter struct {
 }
 
 func (b *TestRouter) Handle(request tdface.IRequest) {
-	fmt.Println("call test router handle")
-	fmt.Println("recv from client: msgid = ", request.GetData().GetRouterId(), ", data=", string(request.GetData().GetData()))
+	utils.Logging("recv from client: msgid = " + strconv.Itoa(int(request.GetData().GetRouterId())) + ", data=" + string(request.GetData().GetData()))
 	
-	err := request.GetConnection().SendMsg(20001, []byte("test...test..test..."))
+	err := request.GetConnection().SendMsg(20001, []byte("pong...pong..pong..."))
 	if err != nil {
 		fmt.Println("send response msg error ", err)
 	}
 }
 
 func (b *TestRouter) AfterHandle(request tdface.IRequest) {
-	fmt.Println("call test router after handle")
+	utils.Logging("call ping router after handle")
 	
 	//_, err := request.GetConnection().GetTCPConnection().Write([]byte("after ping router\n"))
 	//

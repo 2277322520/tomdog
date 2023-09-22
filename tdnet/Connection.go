@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"tomdog/tdface"
+	"tomdog/utils"
 )
 
 type Connection struct {
@@ -19,21 +20,17 @@ type Connection struct {
 	// 当前连接是否是关闭状态
 	isClosed bool
 	
-	// 处理当前连接的 API
-	HandleAPI tdface.HandFunc
-	
 	ExitBuffChan chan bool
 	
 	msgHandler tdface.IMsgHandler
 }
 
 // NewConnection 构造函数
-func NewConnection(conn *net.TCPConn, connID uint32, callbackApi tdface.HandFunc, router tdface.IRouter, handler tdface.IMsgHandler) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, handler tdface.IMsgHandler) *Connection {
 	c := &Connection{
 		Conn:         conn,
 		ConnID:       connID,
 		isClosed:     false,
-		HandleAPI:    callbackApi,
 		ExitBuffChan: make(chan bool, 1),
 		msgHandler:   handler,
 	}
@@ -49,9 +46,8 @@ func NewConnection(conn *net.TCPConn, connID uint32, callbackApi tdface.HandFunc
 // 这也是 Go 语言中方法声明的一种习惯用法，以便在方法内部可以修改接收者的状态。如果你使用值接收者，那么在方法内部修改的将会是
 // 接收者的副本，而不是原始对象，这可能不是你想要的行为。因此，通常建议使用指针接收者来声明方法，以便可以修改接收者的状态。
 func (c *Connection) StartReader() {
-	
-	fmt.Println("reader goroutine is running")
-	defer fmt.Println(c.RemoteAddr().String(), " conn reader exit!")
+	utils.Logging("reader goroutine is running")
+	defer utils.Logging(c.RemoteAddr().String() + " conn reader exit!")
 	defer c.Stop()
 	
 	for {

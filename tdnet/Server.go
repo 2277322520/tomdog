@@ -1,9 +1,9 @@
 package tdnet
 
 import (
-	"errors"
 	"fmt"
 	"net"
+	"strconv"
 	"tomdog/tdface"
 	"tomdog/utils"
 )
@@ -17,8 +17,6 @@ type Server struct {
 	IP string
 	// 服务器绑定的端口
 	Port int
-	// 当前 Server 由用户绑定回调的 router
-	Router tdface.IRouter
 	// 消息处理器
 	msgHandler tdface.IMsgHandler
 }
@@ -27,19 +25,8 @@ func (s *Server) AddRouter(router tdface.IRouter) {
 	s.msgHandler.AddRouter(router)
 }
 
-// CallBackToClient 定义当前客户端的 Handle API
-func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
-	fmt.Println("[conn handle] call back to client")
-	if _, err := conn.Write(data[:cnt]); err != nil {
-		fmt.Println("write buf error ", err)
-		return errors.New("call back error")
-	}
-	
-	return nil
-}
-
 func (s *Server) Start() {
-	fmt.Printf("[starting] server listenner at IP: %s, port %d, is starting\n", s.IP, s.Port)
+	utils.Logging("[starting] server listenner at IP:PORT " + s.IP + "" + strconv.Itoa(s.Port) + ", is starting")
 	
 	go func() {
 		// 1、获取一个 ip 地址
@@ -56,7 +43,7 @@ func (s *Server) Start() {
 			return
 		}
 		// 已经监听成功
-		fmt.Println("[listening] start tomdog server", s.Name, "success, now listening...")
+		utils.Logging("[listening] start tomdog server " + s.Name + " success, now listening")
 		
 		// sever.go 应该有一个自动生成 connID 的方法，并且生成的ID应该满足要求
 		var cid uint32
@@ -75,7 +62,7 @@ func (s *Server) Start() {
 			// 3.2 todo Server.Start() 设置服务器最大连接控制，如果超过最大连接，则关闭最新的链接
 			
 			// 3.3 Server.Start() 处理该信链接请求的业务方法
-			dealConn := NewConnection(tcpConn, cid, CallBackToClient, s.Router, s.msgHandler)
+			dealConn := NewConnection(tcpConn, cid, s.msgHandler)
 			cid++
 			
 			go dealConn.Start()
@@ -86,8 +73,7 @@ func (s *Server) Start() {
 }
 
 func (s *Server) Stop() {
-	fmt.Println("[STOP] tomdog server ,name ", s.Name)
-	
+	utils.Logging("[stop] tomdog server ,name " + s.Name)
 	// todo 关闭资源
 }
 
@@ -107,7 +93,6 @@ func NewServer() tdface.IServer {
 		IPVersion:  "tcp4",
 		IP:         utils.GlobalObject.Host,
 		Port:       utils.GlobalObject.TcpPort,
-		Router:     nil,
 		msgHandler: NewMsgHandler(),
 	}
 	
