@@ -9,7 +9,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	s := tdnet.NewServer("testServer")
+	s := tdnet.NewServer()
 	
 	go ClientTest()
 	s.Serve()

@@ -19,10 +19,11 @@ type Server struct {
 	Port int
 	// 当前 Server 由用户绑定回调的 router
 	Router tdface.IRouter
+	// 消息处理器
+	msgHandler tdface.IMsgHandler
 }
 
 func (s *Server) AddRouter(router tdface.IRouter) {
-	s.Router = router
 	
 	fmt.Println("Add Router success!!!")
 }
@@ -98,14 +99,17 @@ func (s *Server) Serve() {
 	select {}
 }
 
-func NewServer(name string) tdface.IServer {
+func NewServer() tdface.IServer {
+	
 	utils.GlobalObject.Init()
+	
 	s := &Server{
-		Name:      utils.GlobalObject.Name,
-		IPVersion: "tcp4",
-		IP:        utils.GlobalObject.Host,
-		Port:      utils.GlobalObject.TcpPort,
-		Router:    nil,
+		Name:       utils.GlobalObject.Name,
+		IPVersion:  "tcp4",
+		IP:         utils.GlobalObject.Host,
+		Port:       utils.GlobalObject.TcpPort,
+		Router:     nil,
+		msgHandler: NewMsgHandler(),
 	}
 	
 	return s

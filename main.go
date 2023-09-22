@@ -3,7 +3,7 @@ package main
 import "tomdog/tdnet"
 
 func main() {
-	server := tdnet.NewServer("testServer")
+	server := tdnet.NewServer()
 	
 	server.AddRouter(&tdnet.PingRouter{})
 	
