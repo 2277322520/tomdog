@@ -18,9 +18,9 @@ func TestDataPackClient(t *testing.T) {
 	// 创建一个封包对象
 	dp := tdnet.NewDataPack()
 	message_1 := &tdnet.Message{
-		Id:      0,
-		DataLen: 5,
-		Data:    []byte{'h', 'e', 'l', 'l', 'o'},
+		RouterId: 10001,
+		DataLen:  5,
+		Data:     []byte{'h', 'e', 'l', 'l', 'o'},
 	}
 	
 	sendMessage_1, err := dp.Pack(message_1)
@@ -30,9 +30,9 @@ func TestDataPackClient(t *testing.T) {
 	}
 	
 	message_2 := &tdnet.Message{
-		Id:      1,
-		DataLen: 7,
-		Data:    []byte{'w', 'o', 'r', 'l', 'd', '!', '!'},
+		RouterId: 10002,
+		DataLen:  7,
+		Data:     []byte{'w', 'o', 'r', 'l', 'd', '!', '!'},
 	}
 	
 	sendMessage_2, err := dp.Pack(message_2)
@@ -95,7 +95,7 @@ func doResponse(conn net.Conn) {
 				return
 			}
 			
-			fmt.Println("==> Recv Msg:ID=", msg.Id, ",Len=", msg.DataLen, ",data=", string(msg.Data))
+			fmt.Println("==> Recv Msg:ID=", msg.RouterId, ",Len=", msg.DataLen, ",data=", string(msg.Data))
 		}
 		
 	}

@@ -24,19 +24,18 @@ type Connection struct {
 	
 	ExitBuffChan chan bool
 	
-	// 当前连接的处理方法 Router
-	Router tdface.IRouter
+	msgHandler tdface.IMsgHandler
 }
 
 // NewConnection 构造函数
-func NewConnection(conn *net.TCPConn, connID uint32, callbackApi tdface.HandFunc, router tdface.IRouter) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, callbackApi tdface.HandFunc, router tdface.IRouter, handler tdface.IMsgHandler) *Connection {
 	c := &Connection{
 		Conn:         conn,
 		ConnID:       connID,
 		isClosed:     false,
 		HandleAPI:    callbackApi,
 		ExitBuffChan: make(chan bool, 1),
-		Router:       router,
+		msgHandler:   handler,
 	}
 	
 	return c
@@ -91,9 +90,7 @@ func (c *Connection) StartReader() {
 		}
 		
 		go func(request tdface.IRequest) {
-			c.Router.PreHandle(request)
-			c.Router.Handle(request)
-			c.Router.AfterHandle(request)
+			c.msgHandler.DoMsgHandler(request)
 			//	如果传递 req 而不是 &req，那么你传递给 PreHandle、Handle 和 AfterHandle 方法的将不再是接口类型，
 			//	而是 Request 结构体的值。这可能会导致类型不匹配的错误，因为方法期望的是接口类型。
 		}(&req)

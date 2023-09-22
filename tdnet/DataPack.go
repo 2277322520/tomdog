@@ -32,7 +32,7 @@ func (d *DataPack) Pack(response tdface.IMessage) ([]byte, error) {
 	}
 	
 	// 写消息ID
-	if err := binary.Write(reponseDataBuf, binary.LittleEndian, response.GetMsgId()); err != nil {
+	if err := binary.Write(reponseDataBuf, binary.LittleEndian, response.GetRouterId()); err != nil {
 		return nil, err
 	}
 	
@@ -54,7 +54,7 @@ func (d *DataPack) Unpack(dataByte []byte) (tdface.IMessage, error) {
 		return nil, err
 	}
 	
-	if err := binary.Read(dataBuf, binary.LittleEndian, &msg.Id); err != nil {
+	if err := binary.Read(dataBuf, binary.LittleEndian, &msg.RouterId); err != nil {
 		return nil, err
 	}
 	

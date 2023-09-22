@@ -64,7 +64,7 @@ func TestDataPackServer(t *testing.T) {
 						return
 					}
 					
-					fmt.Println("==> Recv Msg:ID=", msg.Id, ",Len=", msg.DataLen, ",data=", string(msg.Data))
+					fmt.Println("==> Recv Msg:ID=", msg.RouterId, ",Len=", msg.DataLen, ",data=", string(msg.Data))
 				}
 				
 			}

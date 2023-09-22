@@ -10,18 +10,18 @@ type PingRouter struct {
 	BaseRouter
 }
 
-func (b *PingRouter) Handle(request tdface.IRequest) {
-	fmt.Println("call ping router handle")
-	fmt.Println("recv from client: msgid = ", request.GetData().GetMsgId(), ", data=", string(request.GetData().GetData()))
+func (b *TestRouter) Handle(request tdface.IRequest) {
+	fmt.Println("call test router handle")
+	fmt.Println("recv from client: msgid = ", request.GetData().GetRouterId(), ", data=", string(request.GetData().GetData()))
 	
-	err := request.GetConnection().SendMsg(1001, []byte("pong...pong..pong..."))
+	err := request.GetConnection().SendMsg(20001, []byte("test...test..test..."))
 	if err != nil {
 		fmt.Println("send response msg error ", err)
 	}
 }
 
-func (b *PingRouter) AfterHandle(request tdface.IRequest) {
-	fmt.Println("call ping router after handle")
+func (b *TestRouter) AfterHandle(request tdface.IRequest) {
+	fmt.Println("call test router after handle")
 	
 	//_, err := request.GetConnection().GetTCPConnection().Write([]byte("after ping router\n"))
 	//

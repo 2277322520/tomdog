@@ -24,8 +24,7 @@ type Server struct {
 }
 
 func (s *Server) AddRouter(router tdface.IRouter) {
-	
-	fmt.Println("Add Router success!!!")
+	s.msgHandler.AddRouter(router)
 }
 
 // CallBackToClient 定义当前客户端的 Handle API
@@ -40,7 +39,7 @@ func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
 }
 
 func (s *Server) Start() {
-	fmt.Printf("[START] server listenner at IP: %s, port %d, is starting\n", s.IP, s.Port)
+	fmt.Printf("[starting] server listenner at IP: %s, port %d, is starting\n", s.IP, s.Port)
 	
 	go func() {
 		// 1、获取一个 ip 地址
@@ -57,7 +56,7 @@ func (s *Server) Start() {
 			return
 		}
 		// 已经监听成功
-		fmt.Println("start tomdog server", s.Name, "success, now listening...")
+		fmt.Println("[listening] start tomdog server", s.Name, "success, now listening...")
 		
 		// sever.go 应该有一个自动生成 connID 的方法，并且生成的ID应该满足要求
 		var cid uint32
@@ -76,7 +75,7 @@ func (s *Server) Start() {
 			// 3.2 todo Server.Start() 设置服务器最大连接控制，如果超过最大连接，则关闭最新的链接
 			
 			// 3.3 Server.Start() 处理该信链接请求的业务方法
-			dealConn := NewConnection(tcpConn, cid, CallBackToClient, s.Router)
+			dealConn := NewConnection(tcpConn, cid, CallBackToClient, s.Router, s.msgHandler)
 			cid++
 			
 			go dealConn.Start()

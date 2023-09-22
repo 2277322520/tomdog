@@ -11,4 +11,6 @@ type IRouter interface {
 	
 	// AfterHandle 处理完业务之后的钩子方法
 	AfterHandle(request IRequest)
+	
+	GetRouterId() uint32
 }

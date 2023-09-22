@@ -7,5 +7,5 @@ type IMsgHandler interface {
 	DoMsgHandler(request IRequest)
 	
 	// AddRouter 添加路由
-	AddRouter(msgId uint32, router IRouter)
+	AddRouter(router IRouter)
 }

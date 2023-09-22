@@ -13,7 +13,7 @@ type MsgHandler struct {
 }
 
 func (m *MsgHandler) DoMsgHandler(request tdface.IRequest) {
-	msgid := request.GetData().GetMsgId()
+	msgid := request.GetData().GetRouterId()
 	if _, ok := m.apis[msgid]; !ok {
 		panic("no suitable optional route selector")
 	}
@@ -23,14 +23,14 @@ func (m *MsgHandler) DoMsgHandler(request tdface.IRequest) {
 	m.apis[msgid].AfterHandle(request)
 }
 
-func (m *MsgHandler) AddRouter(msgid uint32, router tdface.IRouter) {
+func (m *MsgHandler) AddRouter(router tdface.IRouter) {
 	// 重复添加路由
-	if _, ok := m.apis[msgid]; ok {
-		panic("repeat router, msgid =" + strconv.Itoa(int(msgid)))
+	if _, ok := m.apis[router.GetRouterId()]; ok {
+		panic("repeat router, routerId =" + strconv.Itoa(int(router.GetRouterId())))
 	}
 	
-	m.apis[msgid] = router
-	fmt.Println("router add success,msgid =", msgid)
+	m.apis[router.GetRouterId()] = router
+	fmt.Println("router add success, routerId =", router.GetRouterId())
 }
 
 // NewMsgHandler 构造函数

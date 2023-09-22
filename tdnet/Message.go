@@ -8,7 +8,7 @@ type Message struct {
 	
 	// Head
 	// 消息 ID
-	Id uint32
+	RouterId uint32
 	
 	// 消息长度
 	DataLen uint32
@@ -21,9 +21,9 @@ type Message struct {
 // NewMsgPackage 创建一个消息体
 func NewMsgPackage(id uint32, data []byte) *Message {
 	return &Message{
-		Id:      id,
-		DataLen: uint32(len(data)),
-		Data:    data,
+		RouterId: id,
+		DataLen:  uint32(len(data)),
+		Data:     data,
 	}
 }
 
@@ -35,8 +35,8 @@ func (m *Message) GetDataLen() uint32 {
 	return m.DataLen
 }
 
-func (m *Message) GetMsgId() uint32 {
-	return m.Id
+func (m *Message) GetRouterId() uint32 {
+	return m.RouterId
 }
 
 func (m *Message) GetData() []byte {
