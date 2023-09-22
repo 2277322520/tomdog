@@ -40,7 +40,7 @@ func (g *GlobalObj) Init() {
 	// 设置一些初始值
 	g.Host = "0.0.0.0"
 	g.TcpPort = 7477
-	g.Name = "TomdogServerApp"
+	g.Name = "tomdog"
 	g.Version = "V0.4"
 	g.MaxPacketSize = 4096
 	g.MaxConn = 1200
