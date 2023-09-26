@@ -10,18 +10,18 @@ import (
 )
 
 type Connection struct {
-	
+
 	// 当前连接的 socket TCP 套接字
 	Conn *net.TCPConn
-	
+
 	// 当前连接 ID，也可以称为 SessionID,ID 全局唯一
 	ConnID uint32
-	
+
 	// 当前连接是否是关闭状态
 	isClosed bool
-	
+
 	ExitBuffChan chan bool
-	
+
 	msgHandler tdface.IMsgHandler
 }
 
@@ -34,7 +34,7 @@ func NewConnection(conn *net.TCPConn, connID uint32, handler tdface.IMsgHandler)
 		ExitBuffChan: make(chan bool, 1),
 		msgHandler:   handler,
 	}
-	
+
 	return c
 }
 
@@ -46,28 +46,29 @@ func NewConnection(conn *net.TCPConn, connID uint32, handler tdface.IMsgHandler)
 // 这也是 Go 语言中方法声明的一种习惯用法，以便在方法内部可以修改接收者的状态。如果你使用值接收者，那么在方法内部修改的将会是
 // 接收者的副本，而不是原始对象，这可能不是你想要的行为。因此，通常建议使用指针接收者来声明方法，以便可以修改接收者的状态。
 func (c *Connection) StartReader() {
+
 	utils.Logging("reader goroutine is running")
 	defer utils.Logging(c.RemoteAddr().String() + " conn reader exit!")
 	defer c.Stop()
-	
+
 	for {
 		dp := NewDataPack()
 		headData := make([]byte, dp.GetHeadLen())
-		
+
 		if _, err := io.ReadFull(c.GetTCPConnection(), headData); err != nil {
 			fmt.Println("read msh head error ", err)
 			c.ExitBuffChan <- true
 			continue
 		}
-		
+
 		msg, err := dp.Unpack(headData)
 		if err != nil {
 			c.ExitBuffChan <- true
 			continue
 		}
-		
+
 		var data []byte
-		
+
 		if msg.GetDataLen() > 0 {
 			data = make([]byte, msg.GetDataLen())
 			_, err := io.ReadFull(c.GetTCPConnection(), data)
@@ -77,14 +78,14 @@ func (c *Connection) StartReader() {
 				continue
 			}
 		}
-		
+
 		msg.SetData(data)
-		
+
 		req := Request{
 			conn:    c,
 			message: msg,
 		}
-		
+
 		go func(request tdface.IRequest) {
 			c.msgHandler.DoMsgHandler(request)
 			//	如果传递 req 而不是 &req，那么你传递给 PreHandle、Handle 和 AfterHandle 方法的将不再是接口类型，
@@ -95,7 +96,7 @@ func (c *Connection) StartReader() {
 
 func (c *Connection) Start() {
 	go c.StartReader()
-	
+
 	for true {
 		// select 语句用于处理多个通道操作。它类似于 switch 语句，但专门用于通道操作。
 		// select 允许你在多个通道之间进行非阻塞的选择，从而实现并发控制。
@@ -112,16 +113,16 @@ func (c *Connection) Stop() {
 	if c.isClosed {
 		return
 	}
-	
+
 	c.isClosed = true
-	
+
 	// 关闭连接
 	err := c.Conn.Close()
 	if err != nil {
 		fmt.Println("close connection error")
 		return
 	}
-	
+
 	// 向管道发送通知，告知主协程当前连接已经成功关闭
 	c.ExitBuffChan <- true
 	// 关闭管道
@@ -144,14 +145,14 @@ func (c *Connection) SendMsg(msgId uint32, data []byte) error {
 	if c.isClosed {
 		return errors.New("connection closed when send msg")
 	}
-	
+
 	dp := NewDataPack()
 	responseData, err := dp.Pack(NewMsgPackage(msgId, data))
 	if err != nil {
 		fmt.Println("pack error msg id = ", msgId)
 		return errors.New("pack error")
 	}
-	
+
 	// 写回客户端
 	_, err = c.Conn.Write(responseData)
 	if err != nil {
@@ -159,6 +160,6 @@ func (c *Connection) SendMsg(msgId uint32, data []byte) error {
 		c.ExitBuffChan <- true
 		return errors.New("conn write error")
 	}
-	
+
 	return nil
 }
