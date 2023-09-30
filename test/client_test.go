@@ -29,13 +29,15 @@ func TestTcpBufSize(t *testing.T) {
 	fd, _ := conn.(*net.TCPConn).File()
 
 	// 获取 TCP 缓冲区大小
-	rBufferSize, err := syscall.GetsockoptInt(int(fd.Fd()), syscall.SOL_SOCKET, syscall.SO_RCVBUF)
+	//rBufferSize, err := syscall.GetsockoptInt(int(fd.Fd()), syscall.SOL_SOCKET, syscall.SO_RCVBUF)
+	rBufferSize, err := syscall.GetsockoptInt(syscall.Handle(int(fd.Fd())), syscall.SOL_SOCKET, syscall.SO_RCVBUF)
 	if err != nil {
 		fmt.Printf("GetsockoptInt error: %v\n", err)
 		return
 	}
 
-	sBufferSize, err := syscall.GetsockoptInt(int(fd.Fd()), syscall.SOL_SOCKET, syscall.SO_SNDBUF)
+	//sBufferSize, err := syscall.GetsockoptInt(int(fd.Fd()), syscall.SOL_SOCKET, syscall.SO_SNDBUF)
+	sBufferSize, err := syscall.GetsockoptInt(syscall.Handle(int(fd.Fd())), syscall.SOL_SOCKET, syscall.SO_SNDBUF)
 	if err != nil {
 		fmt.Printf("GetsockoptInt error: %v\n", err)
 		return
