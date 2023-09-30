@@ -14,6 +14,6 @@ func (b *MultiClientRouter) Handle(request tdface.IRequest) {
 
 }
 
-func (router *MultiClientRouter) GetRouterId() uint32 {
+func (b *MultiClientRouter) GetRouterId() uint32 {
 	return multiClientRouterId
 }
