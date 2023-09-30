@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net"
 	"testing"
-	"time"
 	"tomdog/tdnet"
-	"tomdog/utils"
 )
 
 func TestDataPackClient(t *testing.T) {
@@ -17,21 +15,10 @@ func TestDataPackClient(t *testing.T) {
 
 	doRequest(err, conn)
 
-	doneChannel := make(chan bool)
-
-	go ParseResponse(doneChannel, conn)
+	ParseResponse(conn)
 
 	// 客户端阻塞
-	select {
-	case done := <-doneChannel:
-		// 处理接收到的数据
-		if done {
-			utils.Logging("client 001 got response!!!")
-		}
-	case <-time.After(5 * time.Second):
-		// 超时处理，五秒钟内其他分支没有管道返回则认为请求超时
-		utils.Logging("client 001 time out!!!")
-	}
+	select {}
 }
 
 func doRequest(err error, conn net.Conn) bool {

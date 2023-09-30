@@ -11,7 +11,7 @@ import (
 )
 
 // ParseResponse conn 入参显然不是单例的，无需施加同步互斥手段
-func ParseResponse(doneChannel chan bool, conn net.Conn) {
+func ParseResponse(conn net.Conn) {
 	fmt.Println("client test ... start")
 	time.Sleep(3 * time.Second)
 
@@ -54,9 +54,6 @@ func ParseResponse(doneChannel chan bool, conn net.Conn) {
 			}
 
 			utils.Logging("==> Recv Msg:ID=" + strconv.Itoa(int(msg.RouterId)) + ",Len=" + strconv.Itoa(int(msg.DataLen)) + ",data=" + string(msg.Data))
-
-			// 相应处理完毕，客户端应该关闭连接，通过管道告知主协程
-			doneChannel <- true
 		}
 
 	}
